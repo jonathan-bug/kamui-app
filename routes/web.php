@@ -19,4 +19,5 @@ Route::middleware(AuthUser::class)->group(function () {
 });
 
 //todo
-Route::get('/todo', [TodoController::class, 'page'])->name('todo.page');
+Route::get('/todos', [TodoController::class, 'page'])->name('todos.page');
+Route::get('/api/todos', [TodoController::class, 'index'])->name('api.todos.index');

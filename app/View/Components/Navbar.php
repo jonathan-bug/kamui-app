@@ -16,10 +16,10 @@ class Navbar extends Component
         $this->active = $active;
         $this->options = [
             [
-                'key' => 'todo',
+                'key' => 'todos',
                 'title' => 'Todo',
                 'icon' => 'fa fa-table-list',
-                'route' => route('todo.page')
+                'route' => route('todos.page')
             ],
         ];
     }

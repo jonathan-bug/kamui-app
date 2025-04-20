@@ -1,7 +1,7 @@
 @extends("layout")
 
 @section("content")
-    <x-navbar active="todo"/>
+    <x-navbar active="todos"/>
 
     <div class="container mt-4">
         <div class="row">
