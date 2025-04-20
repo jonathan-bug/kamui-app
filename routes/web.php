@@ -2,6 +2,7 @@
 
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\UserController;
+use App\Http\Controllers\TodoController;
 use App\Http\Middleware\AuthUser;
 
 // token
@@ -16,3 +17,6 @@ Route::get('/users/logout', [UserController::class, 'logout'])->name('users.logo
 Route::middleware(AuthUser::class)->group(function () {
     Route::get('/', fn () => null);
 });
+
+//todo
+Route::get('/todo', [TodoController::class, 'page'])->name('todo.page');
