@@ -130,7 +130,7 @@
 
                     response.record.streak++
                     let date = new Date()
-                    date.setDate(date.getDate())
+                    date.setDate(date.getDate() + 1)
 
                     response.record.last = invertStringDate(dateToString(date))
                     response.record.until = invertStringDate(dateToString(date))
