@@ -4,8 +4,8 @@
     <x-navbar active="todos"/>
 
     <div class="container mt-4">
-        <div class="row">
-            <div class="col-12 col-md-9">
+        <div class="row g-4">
+            <div class="col-12 col-lg-9 order-1 order-lg-0">
                 <div class="card">
                     <div class="card-header d-flex justify-content-between align-items-center">
                         <div class="fw-bold fs-4 p-1">Todos</div>
@@ -17,12 +17,12 @@
                         <table class="table table-striped table-hover">
                             <thead>
                                 <tr>
-                                    <th>Id</th>
                                     <th>Title</th>
                                     <th>Priority</th>
                                     <th>Until</th>
                                     <th>Repeat</th>
                                     <th>Status</th>
+                                    <th>Streak</th>
                                     <th>Manage</th>
                                 </tr>
                             </thead>
@@ -31,7 +31,8 @@
                     </div>
                 </div>
             </div>
-            <div class="col-12 col-md-3">
+
+            <div class="col-12 col-lg-3">
                 <div class="card">
                     <div class="card-header">
                         <div class="fw-bold fs-4 p-1">Filter Todos</div>
@@ -41,21 +42,21 @@
                         <div class="form-group">
                             <label class="form-label" for="">Filter</label>
                             <select class="form-select" id="" name="filter">
-                                <option value="a">Title</option>
-                                <option value="b">Priority</option>
-                                <option value="c">Until</option>
-                                <option value="d">Repeat</option>
-                                <option value="d">Status</option>
+                                <option value="title">Title</option>
+                                <option value="priority">Priority</option>
+                                <option value="until">Until</option>
+                                <option value="repeat">Repeat</option>
+                                <option value="status">Status</option>
+                                <option value="streak">Streak</option>
                             </select>
                         </div>
                         <div class="form-group mt-4">
                             <label class="form-label" for="">Find</label>
-                            <input class="form-control" name="find" type="text" value=""/>
+                            <input class="form-control" name="find" type="text" value="" onkeyup="filterTodos()"/>
                         </div>
                     </div>
                     <div class="card-footer d-flex justify-content-end p-3 gap-2">
-                        <button class="btn btn-secondary">Clear</button>
-                        <button class="btn btn-primary">Apply</button>
+                        <button class="btn btn-secondary" onclick="clearFilter()">Clear</button>
                     </div>
                 </div>
             </div>
@@ -80,10 +81,10 @@
                     <div class="form-group mt-4">
                         <label class="form-label" for="">Priority</label>
                         <select class="form-select" id="" name="priority">
-                            <option value="a">A</option>
-                            <option value="b">B</option>
-                            <option value="c">C</option>
-                            <option value="d">D</option>
+                            <option value="A">A</option>
+                            <option value="B">B</option>
+                            <option value="C">C</option>
+                            <option value="D">D</option>
                         </select>
                     </div>
                     <div class="form-group mt-4">
@@ -92,12 +93,12 @@
                     </div>
                     <div class="form-check form-switch mt-4">
                         <label class="form-label" for="">Repeat</label>
-                        <input class="form-check-input" name="" type="checkbox" value=""/>
+                        <input class="form-check-input" name="repeat" type="checkbox" value=""/>
                     </div>
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                    <button type="button" class="btn btn-primary">Save changes</button>
+                    <button type="button" class="btn btn-primary" onclick="storeTodo()">Save changes</button>
                 </div>
             </div>
         </div>
@@ -108,8 +109,235 @@
 
 @push("scripts")
 <script>
+    function filterTodos() {
+        fetchTodos(records => records.filter(record => String(record[$("select[name='filter']").val()]).includes($("input[name='find']").val())))
+    }
+
+    function clearFilter() {
+        console.log("u")
+        $("input").val("")
+        fetchTodos()
+    }
+    
+    function doneTodo(id) {
+        $.ajax({
+            url: `{{route('api.todos.find', ':id')}}`.replace(':id', id),
+            dataType: "json",
+            method: "GET",
+            success: (response) => {
+                if(response.record.repeat) {
+                    delete response.record.id
+
+                    response.record.streak++
+                    let date = new Date()
+                    date.setDate(date.getDate())
+
+                    response.record.last = invertStringDate(dateToString(date))
+                    response.record.until = invertStringDate(dateToString(date))
+                    response.record.status = 1
+
+                    delete response.record.created_at
+                    delete response.record.updated_at
+
+                    $.ajax({
+                        url: `{{route('api.todos.update', ':id')}}`.replace(':id', id),
+                        dataType: "json",
+                        method: "PUT",
+                        data: response.record,
+                        success: (_response) => {
+                            fetchTodos()
+                        }
+                    })
+                }else {
+                    $.ajax({
+                        url: `{{route('api.todos.destroy', ':id')}}`.replace(':id', id),
+                        dataType: "json",
+                        method: "DELETE",
+                        success: (_response) => {
+                            fetchTodos()
+                        }
+                    })
+                }
+            }
+        })
+    }
+    
+    function fetchTodos(callback = null) {
+        $.ajax({
+            url: "{{route('api.todos.index')}}",
+            dataType: "json",
+            method: "GET",
+            success: (response) => {
+                if(response.status == 200) {
+                    const $table = $("table")
+                    $table.find("tbody").children().remove()
+                    let row = ""
+
+                    //response.records = response.records.filter(record => record.status != 1)
+
+                    if(callback) {
+                        response.records = callback(response.records)
+                    }
+
+                    response.records.forEach(record => {
+                        row = ``
+                        row += `<tr>`
+                        row += `<td>${record.title}</td>`
+
+                        switch(record.priority) {
+                            case "A":
+                                row += `<td><span class="badge bg-danger">A</span></td>`
+                                break
+                            case "B":
+                                row += `<td><span class="badge bg-warning">B</span></td>`
+                                break
+                            case "C":
+                                row += `<td><span class="badge bg-primary">C</span></td>`
+                                break
+                            case "D":
+                                row += `<td><span class="badge bg-success">D</span></td>`
+                                break
+                        }
+                        
+                        row += `<td>${record.until}</td>`
+
+                        if(record.repeat) {
+                            row += `<td><span class="badge bg-light">Yes</span></td>`
+                        }else {
+                            row += `<td><span class="badge bg-dark">No</span></td>`
+                        }
+
+                        if(stringToDate(record.last) <= new Date()) {
+                            row += `<td><span class="badge bg-danger">Not Done Today</span></td>`
+                            let _record = record
+                            _record.status = 0
+
+                            if(daysBetweenDates(stringToDate(record.last), new Date()) > 1) {
+
+                                let _record = record
+                                
+                                delete _record.created_at
+                                delete _record.updated_at
+
+                                _record.last = invertStringDate(dateToString(new Date()))
+                                _record.until = invertStringDate(_record.until)
+                                
+                                _record.streak = 0
+                                
+                                $.ajax({
+                                    url: "{{route('api.todos.update', ':id')}}".replace(':id', _record.id),
+                                    method: "PUT",
+                                    dataType: "json",
+                                    data: _record,
+                                    success: (response) => {}
+                                })
+                            }
+                        }else {
+                            row += `<td><span class="badge bg-success">Done Today</span></td>`
+                        }
+
+                        row += `<td><span class="translate-start badge bg-dark"><i class="fa fa-fire"></i>${" " + record.streak}</span></td>`
+
+                        row += `<td><div class="d-flex justify-content-end gap-2">`
+
+                        
+                        row += `<button class="btn btn-danger" onclick="destroyTodo(${record.id})"><i class="fa fa-trash"></i></button>`
+                        row += `<button class="btn btn-warning" onclick="modifyTodo(${record.id})"><i class="fa fa-pencil"></i></button>`
+                        
+                        row += `<button class="btn btn-success position-relative" onclick="doneTodo(${record.id})"><i class="fa fa-check"></i></button>`
+
+                        row += `</div></td>`
+                        
+                        row += `</tr>`
+
+                        $table.find("tbody").append(row)
+                    })
+                }
+            }
+        })
+    }
+
+    function storeTodo() {
+        if($("input[name='id']").val() == "") {
+            let date = new Date()
+            date.setDate(date.getDate() - 1)
+            
+            let todo = {
+                title: $("input[name='title']").val(),
+                priority: $("select[name='priority']").val(),
+                until: $("input[name='until']").val(),
+                repeat: ($("input[name='repeat']").prop("checked"))? 1: 0,
+                last: invertStringDate(dateToString(date)),
+                streak: 0,
+                status: 0
+            }
+
+            $.ajax({
+                url: "{{route('api.todos.store')}}",
+                method: "POST",
+                dataType: "json",
+                data: todo,
+                success: (response) => {                    
+                    fetchTodos()
+                }
+            })
+
+            $("input").val("")
+            $("#modal").modal("hide")
+        }else {
+            let todo = {
+                title: $("input[name='title']").val(),
+                priority: $("select[name='priority']").val(),
+                until: $("input[name='until']").val(),
+                repeat: ($("input[name='repeat']").prop("checked"))? 1: 0,
+            }
+
+            $.ajax({
+                url: "{{route('api.todos.patch', ':id')}}".replace(":id", $("input[name='id']").val()),
+                method: "PATCH",
+                dataType: "json",
+                data: todo,
+                success: (response) => {
+                    
+                    fetchTodos()
+                }
+            })
+
+            $("input").val("")
+            $("#modal").modal("hide")
+        }
+    }
+
+    function modifyTodo(id) {
+        $.ajax({
+            url: "{{route('api.todos.find', ':id')}}".replace(":id", id),
+            method: "GET",
+            dataType: "json",
+            success: (response) => {
+                $("input[name='id']").val(id)
+                $("input[name='title']").val(response.record.title)
+                $("input[name='priority']").val(response.record.priority)
+                $("input[name='until']").val(response.record.until)
+                $("input[name='repeat']").prop("checked", response.record.repeat)
+
+                $("#modal").modal("show");
+            }
+        })
+    }
+
+    function destroyTodo(id) {
+        $.ajax({
+            url: "{{route('api.todos.destroy', ':id')}}".replace(":id", id),
+            method: "DELETE",
+            dataType: "json",
+            success: (response) => {
+                fetchTodos()
+            }
+        })
+    }
+    
     $(() => {
-        console.log(2)
+        fetchTodos()
     })
 </script>
 @endpush
