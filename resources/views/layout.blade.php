@@ -44,6 +44,119 @@
             function daysBetweenDates(date1, date2) {
                 return Math.floor(Math.abs((date1 - date2) / 86400000))
             }
+
+            class UDate {
+                constructor(date = null, structure = null) {
+                    /**
+                     * @property {date}
+                     * @private
+                     */
+                    this.date = null
+
+                    /**
+                     * @property {_date}
+                     * @private
+                     */
+                    this._date = null
+
+                    if(!!date) {
+                        if(date instanceof Date) {
+                            let output = this.getKeys(`${date.getFullYear()}/${date.getMonth() + 1}/${date.getDate()}`, "yyyy/mm/dd", "/")
+                            this.date = date
+                            this._date = {
+                                0: output[0],
+                                1: output[1],
+                                2: output[2]
+                            }
+                        }else if(date.includes("/")) {
+                            let output = this.getKeys(date, structure, "/")
+                            this.date = new Date(`${output[0]}/${output[1]}/${output[2]}`)
+                            this._date = {
+                                0: output[0],
+                                1: output[1],
+                                2: output[2]
+                            }
+                        }else if(date.includes("-")) {
+                            let output = this.getKeys(date, structure, "-")
+                            this.date = new Date(`${output[0]}-${output[1]}-${output[2]}`)
+                            this._date = {
+                                0: output[0],
+                                1: output[1],
+                                2: output[2]
+                            }
+                        }else {
+                            throw Error("Invalid date structure")
+                        }
+                    }else {
+                        this.date = new Date()
+                        this._date = {
+                            0: this.date.getFullYear(),
+                            1: this.date.getMonth() + 1,
+                            2: this.date.getDate()
+                        }
+                    }
+                }
+
+                /**
+                 * @private
+                 */
+                getKeys(date, structure, divider) {
+                    let _date = date.split(divider)
+                    let _structure = structure.split(divider)
+                    let output = {}
+
+                    for(let i = 0; i < 3; i++) {
+                        if(_structure[i].includes("d")) {
+                            output[2] = _date[i]
+                        }
+
+                        if(_structure[i].includes("m")) {
+                            output[1] = _date[i]
+                        }
+
+                        if(_structure[i].includes("y")) {
+                            output[0] = _date[i]
+                        }
+                    }
+
+                    return output
+                }
+
+                valueOf() {
+                    return this.date.getTime()
+                }
+
+                toStructure(structure) {
+                    let _structure = null
+                    let output = {}
+                    output[3] = 0
+                    
+                    if(structure.includes("/")) {
+                        _structure = structure.split("/")
+                        output[3] = 1
+                    }else if(structure.includes("-")) {
+                        _structure = structure.split("-")
+                    }else {
+                        throw Error("Invalid date structure")
+                    }
+                    
+                    for(let i = 0; i < 3; i++) {
+                        if(_structure[i].includes("d")) {
+                            output[2] = this._date[i]
+                        }
+
+                        if(_structure[i].includes("m")) {
+                            output[1] = this._date[i]
+                        }
+
+                        if(_structure[i].includes("y")) {
+                            output[0] = this._date[i]
+                        }
+                    }
+
+                    return (output[3])? `${output[0]}/${output[1]}/${output[2]}`: `${output[0]}-${output[1]}-${output[2]}`
+                }
+            }
         </script>
         @stack("scripts")
     </body>
