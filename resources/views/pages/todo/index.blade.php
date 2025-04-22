@@ -10,7 +10,7 @@
                     <div class="card-header d-flex justify-content-between align-items-center">
                         <div class="fw-bold fs-4 p-1">Todos</div>
                         <div style="height: fit-content;">
-                            <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#modal">New</button>
+                            <button class="btn btn-primary btn-clear" data-bs-toggle="modal" data-bs-target="#modal">New</button>
                         </div>
                     </div>
                     <div class="card-body p-0 table-responsive">
@@ -110,11 +110,13 @@
 @push("scripts")
 <script>
     function filterTodos() {
-        fetchTodos(records => records.filter(record => String(record[$("select[name='filter']").val()]).includes($("input[name='find']").val())))
+        fetchTodos(records =>
+            records.filter(record =>
+                String(record[$("select[name='filter']").val()])
+                    .includes($("input[name='find']").val())))
     }
 
     function clearFilter() {
-        console.log("u")
         $("input").val("")
         fetchTodos()
     }
@@ -125,38 +127,56 @@
             dataType: "json",
             method: "GET",
             success: (response) => {
-                if(response.record.repeat) {
-                    delete response.record.id
+                if(response.status == 200) {
+                    if(response.record.repeat) {
+                        delete response.record.id
 
-                    response.record.streak++
-                    let date = new Date()
-                    date.setDate(date.getDate() + 1)
+                        let date = new Date()
+                        date.setDate(date.getDate() + 1)
 
-                    response.record.last = invertStringDate(dateToString(date))
-                    response.record.until = invertStringDate(dateToString(date))
-                    response.record.status = 1
+                        response.record.last = (new UDate(date)).toStructure("yyyy-mm-dd")
+                        response.record.until = (new UDate(date)).toStructure("yyyy-mm-dd")
+                        response.record.status = 1
+                        response.record.streak += 1
 
-                    delete response.record.created_at
-                    delete response.record.updated_at
+                        delete response.record.created_at
+                        delete response.record.updated_at
 
-                    $.ajax({
-                        url: `{{route('api.todos.update', ':id')}}`.replace(':id', id),
-                        dataType: "json",
-                        method: "PUT",
-                        data: response.record,
-                        success: (_response) => {
-                            fetchTodos()
+                        $.ajax({
+                            url: `{{route('api.todos.update', ':id')}}`.replace(':id', id),
+                            dataType: "json",
+                            method: "PUT",
+                            data: response.record,
+                            success: (_response) => {
+                                fetchTodos()
+                            }
+                        })
+                    }else {
+                        $.ajax({
+                            url: `{{route('api.todos.destroy', ':id')}}`.replace(':id', id),
+                            dataType: "json",
+                            method: "DELETE",
+                            success: (_response) => {
+                                fetchTodos()
+                            }
+                        })
+                    }
+                    
+                    Toastify({
+                        text: "Todo updated successfully",
+                        duration: 3000,
+                        style: {
+                            background: "#93c54b"
                         }
-                    })
+                    }).showToast();
                 }else {
-                    $.ajax({
-                        url: `{{route('api.todos.destroy', ':id')}}`.replace(':id', id),
-                        dataType: "json",
-                        method: "DELETE",
-                        success: (_response) => {
-                            fetchTodos()
+                    Toastify({
+                        text: "Error, unable to update todo",
+                        duration: 3000,
+                        style: {
+                            background: "#d9534f"
                         }
-                    })
+                    }).showToast();    
                 }
             }
         })
@@ -173,8 +193,7 @@
                     $table.find("tbody").children().remove()
                     let row = ""
 
-                    //response.records = response.records.filter(record => record.status != 1)
-
+                    // filter records
                     if(callback) {
                         response.records = callback(response.records)
                     }
@@ -207,47 +226,45 @@
                             row += `<td><span class="badge bg-dark">No</span></td>`
                         }
 
-                        if(stringToDate(record.last) <= new Date()) {
+                        if((new UDate(record.last, "dd/mm/yyyy")) <= new Date()) {
                             row += `<td><span class="badge bg-danger">Not Done Today</span></td>`
                             let _record = record
                             _record.status = 0
 
-                            if(daysBetweenDates(stringToDate(record.last), new Date()) > 1) {
-
+                            if(daysBetweenDates((new UDate(record.last, "dd/mm/yyyy")), new Date()) > 1) {
                                 let _record = record
-                                
                                 delete _record.created_at
                                 delete _record.updated_at
-
-                                _record.last = invertStringDate(dateToString(new Date()))
-                                _record.until = invertStringDate(_record.until)
-                                
+                                _record.last = (new UDate(new Date())).toStructure("yyyy-mm-dd")
+                                _record.until = (new UDate(_record.until, "dd/mm/yyyy")).toStructure("yyyy-mm-dd")
                                 _record.streak = 0
                                 
                                 $.ajax({
-                                    url: "{{route('api.todos.update', ':id')}}".replace(':id', _record.id),
+                                    url: "{{route('api.todos.update', ':id')}}".replace(":id", _record.id),
                                     method: "PUT",
                                     dataType: "json",
-                                    data: _record,
-                                    success: (response) => {}
+                                    data: _record
                                 })
                             }
+
+                            $.ajax({
+                                url: "{{route('api.todos.patch', ':id')}}".replace(":id", _record.id),
+                                method: "PATCH",
+                                dataType: "json",
+                                data: {
+                                    status: _record.status
+                                }
+                            })
                         }else {
                             row += `<td><span class="badge bg-success">Done Today</span></td>`
                         }
 
                         row += `<td><span class="translate-start badge bg-dark"><i class="fa fa-fire"></i>${" " + record.streak}</span></td>`
-
                         row += `<td><div class="d-flex justify-content-end gap-2">`
-
-                        
                         row += `<button class="btn btn-danger" onclick="destroyTodo(${record.id})"><i class="fa fa-trash"></i></button>`
                         row += `<button class="btn btn-warning" onclick="modifyTodo(${record.id})"><i class="fa fa-pencil"></i></button>`
-                        
                         row += `<button class="btn btn-success position-relative" onclick="doneTodo(${record.id})"><i class="fa fa-check"></i></button>`
-
                         row += `</div></td>`
-                        
                         row += `</tr>`
 
                         $table.find("tbody").append(row)
@@ -267,7 +284,7 @@
                 priority: $("select[name='priority']").val(),
                 until: $("input[name='until']").val(),
                 repeat: ($("input[name='repeat']").prop("checked"))? 1: 0,
-                last: invertStringDate(dateToString(date)),
+                last: (new UDate(date)).toStructure("yyyy-mm-dd"),
                 streak: 0,
                 status: 0
             }
@@ -277,13 +294,27 @@
                 method: "POST",
                 dataType: "json",
                 data: todo,
-                success: (response) => {                    
-                    fetchTodos()
+                success: (response) => {
+                    if(response.status == 200) {
+                        fetchTodos()
+                        Toastify({
+                            text: "Todo added successfully",
+                            duration: 3000,
+                            style: {
+                                background: "#93c54b"
+                            }
+                        }).showToast();
+                    }else {
+                        Toastify({
+                            text: "Error, unable to add todo",
+                            duration: 3000,
+                            style: {
+                                background: "#d9534f"
+                            }
+                        }).showToast();
+                    }
                 }
             })
-
-            $("input").val("")
-            $("#modal").modal("hide")
         }else {
             let todo = {
                 title: $("input[name='title']").val(),
@@ -298,14 +329,30 @@
                 dataType: "json",
                 data: todo,
                 success: (response) => {
-                    
-                    fetchTodos()
+                    if(response.status == 200) {
+                        fetchTodos()
+                        Toastify({
+                            text: "Todo updated successfully",
+                            duration: 3000,
+                            style: {
+                                background: "#93c54b"
+                            }
+                        }).showToast();
+                    }else {
+                        Toastify({
+                            text: "Error, unable to update todo",
+                            duration: 3000,
+                            style: {
+                                background: "#d9534f"
+                            }
+                        }).showToast();
+                    }
                 }
             })
-
-            $("input").val("")
-            $("#modal").modal("hide")
         }
+
+        $("input").val("")
+        $("#modal").modal("hide")
     }
 
     function modifyTodo(id) {
@@ -314,13 +361,14 @@
             method: "GET",
             dataType: "json",
             success: (response) => {
-                $("input[name='id']").val(id)
-                $("input[name='title']").val(response.record.title)
-                $("input[name='priority']").val(response.record.priority)
-                $("input[name='until']").val(response.record.until)
-                $("input[name='repeat']").prop("checked", response.record.repeat)
-
-                $("#modal").modal("show");
+                if(response.status == 200) {
+                    $("input[name='id']").val(response.record.id)
+                    $("input[name='title']").val(response.record.title)
+                    $("select[name='priority']").val(response.record.priority)
+                    $("input[name='until']").val(response.record.until)
+                    $("input[name='repeat']").prop("checked", response.record.repeat)
+                    $("#modal").modal("show");
+                }
             }
         })
     }
@@ -330,14 +378,33 @@
             url: "{{route('api.todos.destroy', ':id')}}".replace(":id", id),
             method: "DELETE",
             dataType: "json",
-            success: (response) => {
-                fetchTodos()
+            success: response => {
+                if(response.status == 200) {
+                    fetchTodos()
+                    Toastify({
+                        text: "Todo deleted successfully",
+                        duration: 3000,
+                        style: {
+                            background: "#93c54b"
+                        }
+                    }).showToast();
+                }else {
+                    Toastify({
+                        text: "Error, unable to delete todo",
+                        duration: 3000,
+                        style: {
+                            background: "#d9534f"
+                        }
+                    }).showToast();
+                }
             }
         })
     }
     
     $(() => {
         fetchTodos()
+
+        $(".btn-clear").click(() => $("input").val(""))
     })
 </script>
 @endpush

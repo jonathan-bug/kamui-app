@@ -21,7 +21,7 @@ class TodoController extends Controller
             $todo->until = (new Carbon($todo->until))->format('d/m/Y');
             
             return $todo;
-        });
+        })->sortBy("priority")->values()->all();
 
         $data = [
             'message' => 'Todos fetched successfully',
@@ -104,7 +104,6 @@ class TodoController extends Controller
         $todo = Todo::find($id);
 
         if($todo != null) {
-            $todo->title = $request->get('title');
             if($request->get('title') != null) {
                 $todo->title = $request->get('title');
             }
@@ -131,9 +130,20 @@ class TodoController extends Controller
             }
             
             $todo->save();
+            $data = [
+                'message' => 'Todo updated successfully',
+                'status' => 200
+            ];
+
+            return $data;
         }
-        
-        return $todo;
+
+        $data = [
+            'message' => 'Unable to update todo',
+            'status' => 404
+        ];
+
+        return $data;
     }
 
     public function destroy($id) {
@@ -141,8 +151,20 @@ class TodoController extends Controller
 
         if($todo != null) {
             $todo->delete();
+
+            $data = [
+                'message' => 'Todo deleted successfully',
+                'status' => 200
+            ];
+
+            return $data;
         }
 
-        return 1;
+        $data = [
+            'message' => 'Unable to delete todo',
+            'status' => 404
+        ];
+
+        return $data;
     }
 }

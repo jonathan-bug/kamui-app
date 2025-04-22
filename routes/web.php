@@ -23,6 +23,6 @@ Route::middleware(AuthUser::class)->group(function () {
     Route::get('/api/todos/{id}', [TodoController::class, 'find'])->name('api.todos.find');
     Route::put('/api/todos/{id}', [TodoController::class, 'update'])->name('api.todos.update');
     Route::post('/api/todos', [TodoController::class, 'store'])->name('api.todos.store');
-    Route::patch('/api/todos,{id}', [TodoController::class, 'patch'])->name('api.todos.patch');
+    Route::patch('/api/todos/{id}', [TodoController::class, 'patch'])->name('api.todos.patch');
     Route::delete('/api/todos/{id}', [TodoController::class, 'destroy'])->name('api.todos.destroy');
 });
