@@ -3,6 +3,7 @@
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\TodoController;
+use App\Http\Controllers\PomodoroController;
 use App\Http\Middleware\AuthUser;
 
 // users
@@ -15,7 +16,7 @@ Route::middleware(AuthUser::class)->group(function () {
     // token
     Route::get('/api/token', fn () => csrf_token())->name('api.token');
     
-    Route::get('/', fn () => view('pages.todos.index'));
+    Route::get('/', [TodoController::class, 'page']);
 
     //todo
     Route::get('/todos', [TodoController::class, 'page'])->name('todos.page');
@@ -25,4 +26,7 @@ Route::middleware(AuthUser::class)->group(function () {
     Route::post('/api/todos', [TodoController::class, 'store'])->name('api.todos.store');
     Route::patch('/api/todos/{id}', [TodoController::class, 'patch'])->name('api.todos.patch');
     Route::delete('/api/todos/{id}', [TodoController::class, 'destroy'])->name('api.todos.destroy');
+
+    // pomodoro
+    Route::get('/pomodoro', [PomodoroController::class, 'page'])->name('pomodoro.page');
 });

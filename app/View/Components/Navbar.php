@@ -21,6 +21,12 @@ class Navbar extends Component
                 'icon' => 'fa fa-table-list',
                 'route' => route('todos.page')
             ],
+            [
+                'key' => 'pomodoro',
+                'title' => 'Pomodoro',
+                'icon' => 'fa fa-clock',
+                'route' => route('pomodoro.page')
+            ]
         ];
     }
 
