@@ -128,6 +128,9 @@ class TodoController extends Controller
             if($request->get('status') != null) {
                 $todo->status = $request->get('status');
             }
+            if($request->get('sub_status') != null) {
+                $todo->sub_status = $request->get('sub_status');
+            }
             
             $todo->save();
             $data = [

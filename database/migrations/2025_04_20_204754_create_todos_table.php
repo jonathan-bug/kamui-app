@@ -20,6 +20,7 @@ return new class extends Migration
             $table->date('last');
             $table->integer('streak');
             $table->boolean('status');
+            $table->string('sub_status')->default('backlog');
             $table->timestamps();
         });
     }

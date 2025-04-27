@@ -230,7 +230,20 @@
                             if(record.repeat) {
                                 row += `<td><span class="badge bg-danger">Not Done Today</span></td>`
                             }else {
-                                row += `<td><span class="badge bg-danger">Todo</span></td>`
+                                switch(record.sub_status) {
+                                    case "backlog":
+                                        row += `<td><span class="badge bg-dark">${record.sub_status}</span></td>`
+                                        break
+                                    case "todo":
+                                        row += `<td><span class="badge bg-danger">${record.sub_status}</span></td>`
+                                        break
+                                    case "doing":
+                                        row += `<td><span class="badge bg-warning">${record.sub_status}</span></td>`
+                                        break
+                                    case "done":
+                                        row += `<td><span class="badge bg-success">${record.sub_status}</span></td>`
+                                        break
+                                }
                             }
                             
                             let _record = record
