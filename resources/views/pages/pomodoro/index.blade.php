@@ -33,7 +33,7 @@
     let seconds = 0
     let minutes = 1
     let started = false
-    let timerMinutes = 1
+    let timerMinutes = 25
     let mode = true
     const audio = new Audio("/bubble.wav")
 
@@ -60,6 +60,29 @@
             clearInterval(timerInterval)
             started = false
             audio.play()
+
+            if(mode) {
+                timerMinutes = 5
+                
+                $(".timer").text(`${timerMinutes}:00`)
+                $(".timer").css({
+                    color: "#d9534f"
+                })
+
+                mode = !mode
+            }else {
+                timerMinutes = 25
+                
+                $(".timer").text(`${timerMinutes}:00`)
+                $(".timer").css({
+                    color: "#93c54b"
+                })
+
+                mode = !mode
+            }
+
+            seconds = 0
+            minutes = 1
         }
     }
     
@@ -95,7 +118,7 @@
 
         $(".btn-switch").click(() => {
             if(mode) {
-                timerMinutes = 2
+                timerMinutes = 5
                 
                 $(".timer").text(`${timerMinutes}:00`)
                 $(".timer").css({
@@ -104,7 +127,7 @@
 
                 mode = !mode
             }else {
-                timerMinutes = 1
+                timerMinutes = 25
                 
                 $(".timer").text(`${timerMinutes}:00`)
                 $(".timer").css({
