@@ -11,7 +11,7 @@
                         <div class="fw-bold fs-4 p-1">Pomodoro</div>
                     </div>
                     <div class="card-body d-flex justify-content-center">
-                        <div class="fw-bold text-success timer" style="font-size: 90px;">25:00</div>
+                        <div class="fw-bold timer" style="font-size: 90px;"></div>
                     </div>
                     <div class="card-footer d-flex justify-content-center gap-2 p-3">
                         <button class="btn-start btn btn-success">Start</button>
@@ -31,8 +31,11 @@
 <script>
     let timerInterval
     let seconds = 0
-    let minutes = 0
+    let minutes = 1
     let started = false
+    let timerMinutes = 1
+    let mode = true
+    const audio = new Audio("/bubble.wav")
 
     function outputTime(time) {
         return (time < 10)? '0' + time: time
@@ -47,20 +50,25 @@
         }
 
         if((60 - seconds) == 60) {
-            $(".timer").text(`${outputTime(25 - minutes)}:00`)
+            $(".timer").text(`${outputTime(timerMinutes - minutes)}:00`)
         }else {
-            $(".timer").text(`${outputTime(25 - minutes)}:${outputTime(60 - seconds)}`)
+            $(".timer").text(`${outputTime(timerMinutes - minutes)}:${outputTime(60 - seconds)}`)
         }
 
-        if(minutes == 25) {
+        if(((timerMinutes + 1) - minutes) == 0) {
+            $(".timer").text(`00:00`)
             clearInterval(timerInterval)
             started = false
-            seconds = 0
-            minutes = 0
+            audio.play()
         }
     }
-
+    
     $(() => {
+        $(".timer").text(`${timerMinutes}:00`)
+        $(".timer").css({
+            color: "#93c54b"
+        })
+        
         $(".btn-start").click(() => {
             if(!started) {
                 started = true
@@ -73,6 +81,43 @@
                 clearInterval(timerInterval)
                 started = false
             }
+        })
+
+        $(".btn-restart").click(() => {
+            clearInterval(timerInterval)
+            
+            started = false
+            seconds = 0
+            minutes = 1
+            
+            $(".timer").text(`${timerMinutes}:00`)
+        })
+
+        $(".btn-switch").click(() => {
+            if(mode) {
+                timerMinutes = 2
+                
+                $(".timer").text(`${timerMinutes}:00`)
+                $(".timer").css({
+                    color: "#d9534f"
+                })
+
+                mode = !mode
+            }else {
+                timerMinutes = 1
+                
+                $(".timer").text(`${timerMinutes}:00`)
+                $(".timer").css({
+                    color: "#93c54b"
+                })
+
+                mode = !mode
+            }
+
+            clearInterval(timerInterval)
+            started = false
+            seconds = 0
+            minutes = 1
         })
     })
 </script>

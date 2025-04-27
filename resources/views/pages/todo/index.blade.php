@@ -231,7 +231,8 @@
                             let _record = record
                             _record.status = 0
 
-                            if(daysBetweenDates((new UDate(record.last, "dd/mm/yyyy")), new Date()) > 1) {
+                            if(daysBetweenDates((new UDate(record.last, "dd/mm/yyyy")), new Date()) >= 1) {
+                                console.log(2)
                                 let _record = record
                                 delete _record.created_at
                                 delete _record.updated_at
