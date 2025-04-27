@@ -4,6 +4,7 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\TodoController;
 use App\Http\Controllers\PomodoroController;
+use App\Http\Controllers\KanbanController;
 use App\Http\Middleware\AuthUser;
 
 // users
@@ -29,4 +30,7 @@ Route::middleware(AuthUser::class)->group(function () {
 
     // pomodoro
     Route::get('/pomodoro', [PomodoroController::class, 'page'])->name('pomodoro.page');
+
+    // kanban
+    Route::get('/kanban', [KanbanController::class, 'page'])->name('kanban.page');
 });

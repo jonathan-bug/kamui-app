@@ -26,6 +26,12 @@ class Navbar extends Component
                 'title' => 'Pomodoro',
                 'icon' => 'fa fa-clock',
                 'route' => route('pomodoro.page')
+            ],
+            [
+                'key' => 'kanban',
+                'title' => 'Kanban',
+                'icon' => 'fa fa-table',
+                'route' => route('kanban.page')
             ]
         ];
     }

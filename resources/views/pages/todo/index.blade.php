@@ -227,7 +227,12 @@
                         }
 
                         if((new UDate(record.last, "dd/mm/yyyy")) <= new Date()) {
-                            row += `<td><span class="badge bg-danger">Not Done Today</span></td>`
+                            if(record.repeat) {
+                                row += `<td><span class="badge bg-danger">Not Done Today</span></td>`
+                            }else {
+                                row += `<td><span class="badge bg-danger">Todo</span></td>`
+                            }
+                            
                             let _record = record
                             _record.status = 0
 
