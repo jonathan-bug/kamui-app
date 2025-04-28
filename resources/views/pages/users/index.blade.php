@@ -31,7 +31,7 @@
                         </div>
                         <div class="form-group mt-4">
                             <label class="form-label" for="">Password</label>
-                            <input class="form-control" name="password" type="text" value=""/>
+                            <input class="form-control" name="password" type="password" value=""/>
                         </div>
                     </div>
                     <div class="card-footer d-flex justify-content-end p-4">
