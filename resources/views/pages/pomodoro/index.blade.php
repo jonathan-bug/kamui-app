@@ -51,8 +51,10 @@
 
         if((60 - seconds) == 60) {
             $(".timer").text(`${outputTime(timerMinutes - minutes)}:00`)
+            $("title").text(`KAMUI - ${outputTime(timerMinutes - minutes)}:00`)
         }else {
             $(".timer").text(`${outputTime(timerMinutes - minutes)}:${outputTime(60 - seconds)}`)
+            $("title").text(`KAMUI - ${outputTime(timerMinutes - minutes)}:${outputTime(60 - seconds)}`)
         }
 
         if(((timerMinutes + 1) - minutes) == 0) {
@@ -65,6 +67,7 @@
                 timerMinutes = 5
                 
                 $(".timer").text(`${timerMinutes}:00`)
+                $("title").text(`${timerMinutes}:00`)
                 $(".timer").css({
                     color: "#d9534f"
                 })
@@ -74,6 +77,7 @@
                 timerMinutes = 25
                 
                 $(".timer").text(`${timerMinutes}:00`)
+                $("title").text(`${timerMinutes}:00`)
                 $(".timer").css({
                     color: "#93c54b"
                 })
@@ -113,14 +117,14 @@
             seconds = 0
             minutes = 1
             
-            $(".timer").text(`${timerMinutes}:00`)
+            $(".timer").text(`${outputTime(timerMinutes)}:00`)
         })
 
         $(".btn-switch").click(() => {
             if(mode) {
                 timerMinutes = 5
                 
-                $(".timer").text(`${timerMinutes}:00`)
+                $(".timer").text(`${outputTime(timerMinutes)}:00`)
                 $(".timer").css({
                     color: "#d9534f"
                 })
@@ -128,8 +132,8 @@
                 mode = !mode
             }else {
                 timerMinutes = 25
-                
-                $(".timer").text(`${timerMinutes}:00`)
+
+                $(".timer").text(`${outputTime(timerMinutes)}:00`)
                 $(".timer").css({
                     color: "#93c54b"
                 })
