@@ -1,0 +1,26 @@
+* kamui-app
+This is  a personal project  to improve and  create habits. It  has an
+*Everything* to keep track of your pending tasks or create habits with a
+repeatable task with the intention of gamifying it.
+
+*Kanban* helps you  control tasks that are not repeatable,  but that you
+would still like to have control over.
+
+*Pomodoro* helps  you control  and manage your  time while  you complete
+your tasks.
+
+** Todo
+- [X] Add *Todo*
+- [X] Add *Kanban*
+- [X] Add *Pomodoro*
+- [ ] Add *Dashboard*
+
+** Images
+[[./images/img00.png]]
+[[./images/img01.png]]
+[[./images/img02.png]]
+[[./images/img03.png]]
+[[./images/img04.png]]
+[[./images/img05.png]]
+[[./images/img06.png]]
+[[./images/img07.png]]
