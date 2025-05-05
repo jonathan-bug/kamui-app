@@ -38,25 +38,51 @@
                         <div class="fw-bold fs-4 p-1">Filter Todos</div>
                     </div>
                     <div class="card-body">
-                        <input class="visually-hidden" name="id" type="text" value=""/>
                         <div class="form-group">
-                            <label class="form-label" for="">Filter</label>
-                            <select class="form-select" id="" name="filter">
-                                <option value="title">Title</option>
-                                <option value="priority">Priority</option>
-                                <option value="until">Until</option>
-                                <option value="repeat">Repeat</option>
-                                <option value="status">Status</option>
-                                <option value="streak">Streak</option>
+                            <label class="form-label" for="">Title</label>
+                            <input class="form-control" name="filter-title" type="text" value=""/>
+                        </div>
+                        <div class="form-group mt-4">
+                            <label class="form-label" for="">Priority</label>
+                            <select class="form-select" id="" name="filter-priority">
+                                <option value="all">All</option>
+                                <option value="a">A</option>
+                                <option value="b">B</option>
+                                <option value="c">C</option>
+                                <option value="d">D</option>
                             </select>
                         </div>
                         <div class="form-group mt-4">
-                            <label class="form-label" for="">Find</label>
-                            <input class="form-control" name="find" type="text" value="" onkeyup="filterTodos()"/>
+                            <label class="form-label" for="">Until</label>
+                            <input class="form-control" name="filter-until" type="date" value=""/>
+                        </div>
+                        <div class="form-group mt-4">
+                            <label class="form-label" for="">Repeat</label>
+                            <select class="form-select" id="" name="filter-repeat">
+                                <option value="all">All</option>
+                                <option value="yes">Yes</option>
+                                <option value="no">No</option>
+                            </select>
+                        </div>
+                        <div class="form-group mt-4">
+                            <label class="form-label" for="">Status</label>
+                            <select class="form-select" id="" name="filter-status">
+                                <option value="all">All</option>
+                                <option value="done today">Done Today</option>
+                                <option value="not done today">Not Done Today</option>
+                                <option value="todo">todo</option>
+                                <option value="doing">doing</option>
+                                <option value="done">done</option>
+                            </select>
+                        </div>
+                        <div class="form-group mt-4">
+                            <label class="form-label" for="">Streak</label>
+                            <input class="form-control" name="filter-streak" type="number" value=""/>
                         </div>
                     </div>
                     <div class="card-footer d-flex justify-content-end p-3 gap-2">
                         <button class="btn btn-secondary" onclick="clearFilter()">Clear</button>
+                        <button class="btn btn-primary" onclick="filterTodos()">Filter</button>
                     </div>
                 </div>
             </div>
@@ -110,14 +136,70 @@
 @push("scripts")
 <script>
     function filterTodos() {
-        fetchTodos(records =>
-            records.filter(record =>
-                String(record[$("select[name='filter']").val()])
-                    .includes($("input[name='find']").val())))
+        const filter = {
+            title: $("input[name='filter-title']").val(),
+            priority: $("select[name='filter-priority']").val(),
+            until: $("input[name='filter-until']").val(),
+            repeat: $("select[name='filter-repeat']").val(),
+            status: $("select[name='filter-status']").val(),
+            streak: $("input[name='filter-streak']").val()
+        }
+
+        fetchTodos(records => {
+            if(filter.title != "") {
+                records = records.filter(record =>
+                    record.title.toLowerCase().includes(filter.title))
+            }
+
+            if(filter.priority.toLowerCase() != "all") {
+                records = records.filter(record =>
+                    record.priority.toLowerCase() == filter.priority)
+            }
+
+            if(filter.until != "") {
+                const filterUntil = (new UDate(filter.until, "yyyy-mm-dd")).date
+                records = records.filter(record => (new Date(record.until)) <= filterUntil)
+            }
+
+            if(filter.repeat == "yes") {
+                records = records.filter(record =>
+                    record.repeat == true)
+            }else if(filter.repeat == "no") {
+                records = records.filter(record =>
+                    record.repeat == false)
+            }
+
+            if(filter.status == "done today") {
+                records = records.filter(record =>
+                    record.status == true)
+            }else if(filter.status == "not done today") {
+                records = records.filter(record =>
+                    record.status == false)
+            }else if(filter.status == "todo") {
+                records = records.filter(record =>
+                    record.sub_status == "todo")
+            }else if(filter.status == "doing") {
+                records = records.filter(record =>
+                    record.sub_status == "doing")
+            }else if(filter.status == "done") {
+                records = records.filter(record =>
+                    record.sub_status == "done")
+            }
+
+            if(filter.streak != "") {
+                records = records.filter(record =>
+                    record.streak == filter.streak)
+            }
+            
+            return records
+        })
     }
 
     function clearFilter() {
         $("input").val("")
+        $("select[name='filter-priority']").val("all")
+        $("select[name='filter-repeat']").val("all")
+        $("select[name='filter-status']").val("all")
         fetchTodos()
     }
     
