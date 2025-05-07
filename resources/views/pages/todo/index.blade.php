@@ -6,7 +6,7 @@
     <div class="container mt-4">
         <div class="row g-4">
             <div class="col-12 col-lg-9 order-1 order-lg-0">
-                <div class="card">
+                <div class="card shadow-sm">
                     <div class="card-header d-flex justify-content-between align-items-center">
                         <div class="fw-bold fs-4 p-1">Todos</div>
                         <div style="height: fit-content;">
@@ -33,7 +33,7 @@
             </div>
 
             <div class="col-12 col-lg-3">
-                <div class="card">
+                <div class="card shadow-sm">
                     <div class="card-header">
                         <div class="fw-bold fs-4 p-1">Filter Todos</div>
                     </div>
@@ -148,7 +148,7 @@
         fetchTodos(records => {
             if(filter.title != "") {
                 records = records.filter(record =>
-                    record.title.toLowerCase().includes(filter.title))
+                    record.title.toLowerCase().includes(filter.title.toLowerCase()))
             }
 
             if(filter.priority.toLowerCase() != "all") {
@@ -158,7 +158,8 @@
 
             if(filter.until != "") {
                 const filterUntil = (new UDate(filter.until, "yyyy-mm-dd")).date
-                records = records.filter(record => (new Date(record.until)) <= filterUntil)
+                records = records.filter(record =>
+                    (new UDate(record.until, "dd/mm/yyyy")).date <= filterUntil)
             }
 
             if(filter.repeat == "yes") {

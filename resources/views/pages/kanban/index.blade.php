@@ -6,40 +6,43 @@
     <div class="container mt-4">
         <div class="row g-4">
             <div class="col-12">
-                <div class="card">
+                <div class="card shadow-sm">
                     <div class="card-body" style="padding: 8px 16px !important;">
                         <div class="fw-bold fs-4 p-1">Kanban</div>
                     </div>
                 </div>
             </div>
-
             <div class="col-12">
                 <div class="row g-4">
                     <div class="col-12 col-md-4">
-                        <div class="card">
-                            <div class="card-body card-left" style="min-height: 100px;">
-                                <h5 class="card-title text-danger fw-bold">TODO</h5>
+                        <div class="card shadow-sm" style="height: 100%;">
+                            <div class="card-body flex-column d-flex" style="min-height: 200px;">
+                                <h5 class="card-title fs-5 fw-bold badge bg-danger mb-3">TODO</h5>
+                                <div class="card-left d-flex flex-column gap-3" style="height: 100%;"></div>
                             </div>
                         </div>
                     </div>
                     <div class="col-12 col-md-4">
-                        <div class="card">
-                            <div class="card-body card-middle" style="min-height: 100px;">
-                                <h5 class="card-title text-warning fw-bold">DOING</h5>
+                        <div class="card shadow-sm" style="height: 100%;">
+                            <div class="card-body flex-column d-flex" style="min-height: 200px;">
+                                <h5 class="card-title fs-5 fw-bold badge bg-warning mb-3">DOING</h5>
+                                <div class="card-middle d-flex flex-column gap-3" style="height: 100%;"></div>
                             </div>
                         </div>
                     </div>
                     <div class="col-12 col-md-4">
-                        <div class="card">
-                            <div class="card-body card-right" style="min-height: 100px;">
-                                <h5 class="card-title text-success fw-bold">DONE</h5>
+                        <div class="card shadow-sm" style="height: 100%;">
+                            <div class="card-body flex-column d-flex" style="min-height: 200px;">
+                                <h5 class="card-title fs-5 fw-bold badge bg-success mb-3">DONE</h5>
+                                <div class="card-right d-flex flex-column gap-3" style="height: 100%;"></div>
                             </div>
                         </div>
                     </div>
-                    <div class="col-12">
-                        <div class="card">
-                            <div class="card-body card-backlog d-flex gap-2 flex-wrap" style="min-height: 100px;">
-                                <h5 class="card-title fw-bold" style="flex-basis: 100%;">BACKLOG</h5>
+                    <div class="col-12 col-md-4">
+                        <div class="card shadow-sm" style="height: 100%;">
+                            <div class="card-body flex-column d-flex" style="min-height: 200px;">
+                                <h5 class="card-title fs-5 fw-bold badge bg-dark mb-3">BACKLOG</h5>
+                                <div class="card-backlog d-flex flex-column gap-3" style="height: 100%;"></div>
                             </div>
                         </div>
                     </div>
@@ -61,10 +64,10 @@
 
                 todos.forEach(record => {
                     let card = ``
-                    card += `<div class="card tr-draggable mt-3 bg-light flex-grow-1" draggable="true">`
+                    card += `<div class="card tr-draggable bg-light flex-grow-0 shadow-sm" draggable="true">`
                     card += `<div class="card-body">`
                     card += `<div class="d-flex justify-content-between">`
-                    card += `<h5 class="fw-bold">${record.title}</h5>`
+                    card += `<h5 class="fw-bold pe-2 fs-5">${record.title}</h5>`
                     card += `<i class="fa-solid fa-grip-vertical" style="color: #909090;"></i>`
                     card += `</div>`
                     card += `<div class="mt-2">`
@@ -109,17 +112,19 @@
                         })
                         
                         backlog.on("drop", event => {
-                            backlog.append(active)
-                            active = null
+                            if(active != null) {
+                                backlog.append(active)
+                                active = null
 
-                            $.ajax({
-                                url: "{{route('api.todos.patch', ':id')}}".replace(":id", record.id),
-                                dataType: "json",
-                                method: "PATCH",
-                                data: {
-                                    sub_status: "backlog"
-                                }
-                            })
+                                $.ajax({
+                                    url: "{{route('api.todos.patch', ':id')}}".replace(":id", record.id),
+                                    dataType: "json",
+                                    method: "PATCH",
+                                    data: {
+                                        sub_status: "backlog"
+                                    }
+                                })
+                            }
                         })
 
                         left.on("click", event => {
@@ -131,17 +136,19 @@
                         })
                         
                         left.on("drop", event => {
-                            left.append(active)
-                            active = null
-                            
-                            $.ajax({
-                                url: "{{route('api.todos.patch', ':id')}}".replace(":id", record.id),
-                                dataType: "json",
-                                method: "PATCH",
-                                data: {
-                                    sub_status: "todo"
-                                }
-                            })
+                            if(active != null) {
+                                left.append(active)
+                                active = null
+                                
+                                $.ajax({
+                                    url: "{{route('api.todos.patch', ':id')}}".replace(":id", record.id),
+                                    dataType: "json",
+                                    method: "PATCH",
+                                    data: {
+                                        sub_status: "todo"
+                                    }
+                                })
+                            }
                         })
 
                         middle.on("click", event => {
@@ -153,17 +160,19 @@
                         })
                         
                         middle.on("drop", event => {
-                            middle.append(active)
-                            active = null
+                            if(active != null) {
+                                middle.append(active)
+                                active = null
 
-                            $.ajax({
-                                url: "{{route('api.todos.patch', ':id')}}".replace(":id", record.id),
-                                dataType: "json",
-                                method: "PATCH",
-                                data: {
-                                    sub_status: "doing"
-                                }
-                            })
+                                $.ajax({
+                                    url: "{{route('api.todos.patch', ':id')}}".replace(":id", record.id),
+                                    dataType: "json",
+                                    method: "PATCH",
+                                    data: {
+                                        sub_status: "doing"
+                                    }
+                                })
+                            }
                         })
 
                         right.on("click", event => {
@@ -175,17 +184,19 @@
                         })
                         
                         right.on("drop", event => {
-                            right.append(active)
-                            active = null
+                            if(active != null) {
+                                right.append(active)
+                                active = null
 
-                            $.ajax({
-                                url: "{{route('api.todos.patch', ':id')}}".replace(":id", record.id),
-                                dataType: "json",
-                                method: "PATCH",
-                                data: {
-                                    sub_status: "done"
-                                }
-                            })
+                                $.ajax({
+                                    url: "{{route('api.todos.patch', ':id')}}".replace(":id", record.id),
+                                    dataType: "json",
+                                    method: "PATCH",
+                                    data: {
+                                        sub_status: "done"
+                                    }
+                                })
+                            }
                         })
                     })
 

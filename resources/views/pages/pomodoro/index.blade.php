@@ -6,7 +6,7 @@
     <div class="container mt-4">
         <div class="row g-4">
             <div class="col-12">
-                <div class="card">
+                <div class="card shadow-sm">
                     <div class="card-header">
                         <div class="fw-bold fs-4 p-1">Pomodoro</div>
                     </div>

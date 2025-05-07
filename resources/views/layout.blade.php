@@ -10,7 +10,7 @@
         <link rel="icon" type="image/x-icon" href="/yin-yang.svg">
         @stack("styles")
     </head>
-    <body class="bg-light">
+    <body class="bg-light mb-4">
         @yield("content")
         
         <script src="https://code.jquery.com/jquery-3.7.1.min.js" integrity="sha256-/JqT3SQfawRcv/BIHPThkBvs0OEvtFFmqPF/lYI/Cxo=" crossorigin="anonymous"></script>
