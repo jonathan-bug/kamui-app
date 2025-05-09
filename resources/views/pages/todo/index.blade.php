@@ -145,6 +145,8 @@
             streak: $("input[name='filter-streak']").val()
         }
 
+        localStorage.setItem("filter", JSON.stringify(filter))
+
         fetchTodos(records => {
             if(filter.title != "") {
                 records = records.filter(record =>
@@ -201,6 +203,8 @@
         $("select[name='filter-priority']").val("all")
         $("select[name='filter-repeat']").val("all")
         $("select[name='filter-status']").val("all")
+
+        localStorage.removeItem("filter")
         fetchTodos()
     }
     
@@ -231,7 +235,7 @@
                             method: "PUT",
                             data: response.record,
                             success: (_response) => {
-                                fetchTodos()
+                                fetchTodos(filterTodos)
                             }
                         })
                     }else {
@@ -240,7 +244,7 @@
                             dataType: "json",
                             method: "DELETE",
                             success: (_response) => {
-                                fetchTodos()
+                                fetchTodos(filterTodos)
                             }
                         })
                     }
@@ -398,7 +402,7 @@
                 data: todo,
                 success: (response) => {
                     if(response.status == 200) {
-                        fetchTodos()
+                        fetchTodos(filterTodos)
                         Toastify({
                             text: "Todo added successfully",
                             duration: 3000,
@@ -432,7 +436,7 @@
                 data: todo,
                 success: (response) => {
                     if(response.status == 200) {
-                        fetchTodos()
+                        fetchTodos(filterTodos)
                         Toastify({
                             text: "Todo updated successfully",
                             duration: 3000,
@@ -482,7 +486,7 @@
             dataType: "json",
             success: response => {
                 if(response.status == 200) {
-                    fetchTodos()
+                    fetchTodos(filterTodos)
                     Toastify({
                         text: "Todo deleted successfully",
                         duration: 3000,
@@ -504,7 +508,21 @@
     }
     
     $(() => {
-        fetchTodos()
+        const filter = JSON.parse(localStorage.getItem("filter"))
+        
+        if(!!filter) {
+            $("input[name='filter-title']").val(filter.title),
+            $("select[name='filter-priority']").val(filter.priority),
+            $("input[name='filter-until']").val(filter.until),
+            $("select[name='filter-repeat']").val(filter.repeat),
+            $("select[name='filter-status']").val(filter.status),
+            $("input[name='filter-streak']").val(filter.streak)
+            
+            fetchTodos(filterTodos)
+        }else {
+            fetchTodos()
+        }
+        
 
         $(".btn-clear").click(() => $("input").val(""))
     })
