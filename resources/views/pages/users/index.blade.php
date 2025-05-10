@@ -20,8 +20,9 @@
                     @csrf
                     <div class="card-header">
                         <div class="fw-bold fs-2 text-center">
-                            <i class="fa fa-yin-yang"></i>
-                            KAMUI
+                          <i class="fa-regular fa-circle-check" style="color: #ff7a7a;"></i>
+                          <span>Todo</span>
+                          <span style="color: #ff7a7a;">Ing</span>
                         </div>
                     </div>
                     <div class="card-body p-4">

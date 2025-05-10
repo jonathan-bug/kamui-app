@@ -3,11 +3,11 @@
     <head>
         <meta charset="UTF-8"/>
         <meta name="csrf-token" content="{{csrf_token()}}"/>
-        <title>@yield("title", "KAMUI")</title>
+        <title>@yield("title", "Todo Ing")</title>
         <link href="{{url('bootstrap/css/bootstrap.min.css')}}" rel="stylesheet"/>
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css" integrity="sha512-Evv84Mr4kqVGRNSgIGL/F/aIDqQb7xQ2vcrdIwxfjThSH8CSR7PBEakCr51Ck+w+/U6swU2Im1vVX0SVk9ABhg==" crossorigin="anonymous" referrerpolicy="no-referrer" />
         <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/toastify-js/src/toastify.min.css">
-        <link rel="icon" type="image/x-icon" href="/yin-yang.svg">
+        <link rel="icon" type="image/x-icon" href="/circle-check-regular.svg">
         @stack("styles")
     </head>
     <body class="bg-light mb-4">

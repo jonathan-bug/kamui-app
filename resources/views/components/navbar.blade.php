@@ -1,8 +1,9 @@
 <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
     <div class="container-fluid">
         <a class="navbar-brand fw-bold" href="#">
-            <i class="fa fa-yin-yang" style="color: #ff7a7a;"></i>
-            KAMUI
+          <i class="fa-regular fa-circle-check" style="color: #ff7a7a;"></i>
+          <span>Todo</span>
+          <span style="color: #ff7a7a;">Ing</span>
         </a>
         <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
             <span class="navbar-toggler-icon"></span>
